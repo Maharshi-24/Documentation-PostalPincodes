@@ -159,12 +159,11 @@ select:focus {
     background: var(--method-post);
 }
 
-/* Endpoint Box (Boxy with rounded corners) */
+/* Endpoint Box */
 .endpoint-box {
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: 8px;
-    /* Boxy with little roundy corners */
     padding: 4px 6px 4px 16px;
     display: flex;
     align-items: center;
@@ -210,41 +209,48 @@ select:focus {
 .param-row {
     display: flex;
     align-items: flex-start;
-    padding: 1rem 0;
+    padding: 1.5rem 0;
     border-bottom: 1px solid var(--border);
-    gap: 1rem;
-    /* Reduced gap */
+    gap: 2rem;
 }
 
-.param-meta {
-    width: 140px;
-    /* Reduced width */
+.param-info {
+    width: 250px;
     flex-shrink: 0;
+}
+
+.param-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
 }
 
 .param-name {
     font-family: var(--font-mono);
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-main);
-    font-size: 0.9rem;
-    margin-bottom: 4px;
-}
-
-.param-badges {
-    display: flex;
-    gap: 6px;
-}
-
-.input-wrapper {
-    flex: 1;
-    position: relative;
+    font-size: 0.95rem;
 }
 
 .param-desc {
     font-size: 0.85rem;
     color: var(--text-dim);
-    margin-top: 6px;
-    line-height: 1.4;
+    line-height: 1.5;
+}
+
+.param-options {
+    margin-top: 8px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+}
+
+.input-wrapper {
+    flex: 1;
+    position: relative;
+    max-width: 400px;
 }
 
 /* Doc Header */
@@ -263,18 +269,140 @@ select:focus {
     max-width: 800px;
 }
 
-/* Copy Button */
-.copy-btn {
-    background: transparent;
-    border: none;
-    color: var(--text-muted);
-    cursor: pointer;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    transition: color 0.2s;
+/* Code Section */
+.code-section {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
 }
 
-.copy-btn:hover {
+.code-header {
+    padding: 0.75rem 1rem;
+    background: var(--bg-panel);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* Custom Dropdown */
+.custom-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-btn {
+    background: var(--bg-app);
+    color: var(--primary);
+    border: 1px solid var(--border);
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border-radius: 20px;
+    /* Pill shape */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.dropdown-btn:hover {
+    border-color: var(--primary);
+    background: rgba(0, 239, 139, 0.05);
+}
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    margin-top: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    min-width: 160px;
+    padding: 6px;
+}
+
+.dropdown-menu.show {
+    display: block;
+    animation: fadeIn 0.1s ease-out;
+}
+
+.dropdown-item {
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 6px;
+    transition: all 0.1s;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.05);
     color: var(--text-main);
+}
+
+.dropdown-item.active {
+    color: var(--primary);
+    background: rgba(0, 239, 139, 0.05);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.code-block {
+    padding: 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    overflow-x: auto;
+    white-space: pre-wrap;
+    line-height: 1.6;
+}
+
+/* Copy Icon Button */
+.copy-icon-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.copy-icon-btn:hover {
+    border-color: var(--text-main);
+    color: var(--text-main);
+    background: var(--bg-card);
+}
+
+.copy-icon-btn svg {
+    width: 16px;
+    height: 16px;
 }

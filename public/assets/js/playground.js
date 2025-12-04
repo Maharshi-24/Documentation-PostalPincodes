@@ -5,6 +5,7 @@ const ENV_CONFIG = {
 };
 let currentEnv = localStorage.getItem('api_env') || 'local';
 let currentEndpoint = 'pincode';
+let currentLang = 'curl'; // curl, python, js
 
 // --- Endpoint Definitions ---
 const ENDPOINTS = {
@@ -14,7 +15,7 @@ const ENDPOINTS = {
         method: 'GET',
         path: '/pincode/{code}',
         params: [
-            { name: 'code', type: 'path', desc: 'The 6-digit Pincode of the area.', placeholder: '110001', required: true }
+            { name: 'code', type: 'path', dataType: 'string', desc: 'The 6-digit Pincode of the area.', placeholder: '110001', required: true, example: '110001' }
         ]
     },
     batch: {
@@ -23,7 +24,7 @@ const ENDPOINTS = {
         method: 'POST',
         path: '/pincode/batch',
         params: [
-            { name: 'pincodes', type: 'body', desc: 'Comma separated list of pincodes.', placeholder: '110001, 380001', required: true }
+            { name: 'pincodes', type: 'body', dataType: 'array', desc: 'Comma separated list of pincodes.', placeholder: '110001, 380001', required: true, example: '["110001", "380001"]' }
         ]
     },
     validate: {
@@ -32,7 +33,7 @@ const ENDPOINTS = {
         method: 'GET',
         path: '/validate/{code}',
         params: [
-            { name: 'code', type: 'path', desc: 'The 6-digit Pincode to validate.', placeholder: '560001', required: true }
+            { name: 'code', type: 'path', dataType: 'string', desc: 'The 6-digit Pincode to validate.', placeholder: '560001', required: true, example: '560001' }
         ]
     },
     lookup: {
@@ -41,7 +42,7 @@ const ENDPOINTS = {
         method: 'GET',
         path: '/pincode/{code}/lookup',
         params: [
-            { name: 'code', type: 'path', desc: 'The 6-digit Pincode.', placeholder: '110001', required: true }
+            { name: 'code', type: 'path', dataType: 'string', desc: 'The 6-digit Pincode.', placeholder: '110001', required: true, example: '110001' }
         ]
     },
     search: {
@@ -50,10 +51,10 @@ const ENDPOINTS = {
         method: 'GET',
         path: '/search',
         params: [
-            { name: 'q', type: 'query', desc: 'General search term (e.g., office name).', placeholder: 'Ahmedabad' },
-            { name: 'district', type: 'query', desc: 'Filter results by District.', placeholder: '' },
-            { name: 'office', type: 'query', desc: 'Filter results by Office Name.', placeholder: '' },
-            { name: 'fuzzy', type: 'query', desc: 'Enable fuzzy search for approximate matches.', placeholder: 'false', isSelect: true, options: ['false', 'true'] }
+            { name: 'q', type: 'query', dataType: 'string', desc: 'General search term (e.g., office name).', placeholder: 'Ahmedabad', example: 'Ahmedabad' },
+            { name: 'district', type: 'query', dataType: 'string', desc: 'Filter results by District.', placeholder: '', example: 'Ahmedabad' },
+            { name: 'office', type: 'query', dataType: 'string', desc: 'Filter results by Office Name.', placeholder: '', example: 'GPO' },
+            { name: 'fuzzy', type: 'query', dataType: 'boolean', desc: 'Enable fuzzy search for approximate matches.', placeholder: 'false', isSelect: true, options: ['false', 'true'], example: 'true' }
         ]
     },
     autocomplete: {
@@ -63,8 +64,8 @@ const ENDPOINTS = {
         path: '/autocomplete/{prefix}',
         autoTrigger: true,
         params: [
-            { name: 'prefix', type: 'path', desc: 'Starting digits (min 2).', placeholder: '380', required: true },
-            { name: 'limit', type: 'query', desc: 'Maximum number of results.', placeholder: '10' }
+            { name: 'prefix', type: 'path', dataType: 'string', desc: 'Starting digits (min 2).', placeholder: '380', required: true, example: '380' },
+            { name: 'limit', type: 'query', dataType: 'integer', desc: 'Maximum number of results.', placeholder: '10', example: '5' }
         ]
     },
     nearest: {
@@ -73,10 +74,10 @@ const ENDPOINTS = {
         method: 'GET',
         path: '/nearest',
         params: [
-            { name: 'lat', type: 'query', desc: 'Latitude of the location.', placeholder: '23.0225', required: true, hasAction: true },
-            { name: 'long', type: 'query', desc: 'Longitude of the location.', placeholder: '72.5714', required: true },
-            { name: 'radius', type: 'query', desc: 'Search radius in kilometers (max 20).', placeholder: '10' },
-            { name: 'limit', type: 'query', desc: 'Maximum number of results.', placeholder: '10' }
+            { name: 'lat', type: 'query', dataType: 'float', desc: 'Latitude of the location.', placeholder: '23.0225', required: true, hasAction: true, example: '23.0225' },
+            { name: 'long', type: 'query', dataType: 'float', desc: 'Longitude of the location.', placeholder: '72.5714', required: true, example: '72.5714' },
+            { name: 'radius', type: 'query', dataType: 'integer', desc: 'Search radius in kilometers (max 20).', placeholder: '10', example: '10' },
+            { name: 'limit', type: 'query', dataType: 'integer', desc: 'Maximum number of results.', placeholder: '10', example: '5' }
         ]
     },
     states: {
@@ -92,7 +93,7 @@ const ENDPOINTS = {
         method: 'GET',
         path: '/districts/{state}',
         params: [
-            { name: 'state', type: 'path', desc: 'Name of the state.', placeholder: 'Gujarat', required: true }
+            { name: 'state', type: 'path', dataType: 'string', desc: 'Name of the state.', placeholder: 'Gujarat', required: true, example: 'Gujarat' }
         ]
     },
     offices: {
@@ -101,7 +102,7 @@ const ENDPOINTS = {
         method: 'GET',
         path: '/offices/{district}',
         params: [
-            { name: 'district', type: 'path', desc: 'Name of the district.', placeholder: 'Ahmedabad', required: true }
+            { name: 'district', type: 'path', dataType: 'string', desc: 'Name of the district.', placeholder: 'Ahmedabad', required: true, example: 'Ahmedabad' }
         ]
     }
 };
@@ -110,13 +111,26 @@ const ENDPOINTS = {
 function init() {
     updateEnvUI();
     loadEndpoint('pincode');
+
+    // Close dropdown when clicking outside
+    window.onclick = function (event) {
+        if (!event.target.matches('.dropdown-btn') && !event.target.closest('.dropdown-btn')) {
+            const dropdowns = document.getElementsByClassName("dropdown-menu");
+            for (let i = 0; i < dropdowns.length; i++) {
+                const openDropdown = dropdowns[i];
+                if (openDropdown.classList.contains('show')) {
+                    openDropdown.classList.remove('show');
+                }
+            }
+        }
+    }
 }
 
 function setEnv(env) {
     currentEnv = env;
     localStorage.setItem('api_env', env);
     updateEnvUI();
-    updateCurl();
+    updateCodeSnippet();
 }
 
 function updateEnvUI() {
@@ -156,34 +170,61 @@ function loadEndpoint(key) {
 
             paramsHtml += `
                 <div class="param-row">
-                    <div class="param-meta">
-                        <div class="param-name">${p.name}</div>
-                        <div class="param-badges">
-                            <span class="badge">${p.type === 'path' ? 'string' : 'query'}</span>
+                    <div class="param-info">
+                        <div class="param-header">
+                            <span class="param-name">${p.name}</span>
+                            <span class="badge">${p.dataType || 'string'}</span>
                             ${p.required ? '<span class="badge required">required</span>' : ''}
                         </div>
+                        <div class="param-desc">${p.desc}</div>
+                        ${p.isSelect ? `<div class="param-options">Options: ${p.options.join(', ')}</div>` : ''}
                     </div>
                     <div class="input-wrapper">
                         ${inputHtml}
                         ${actionHtml}
-                        <div class="param-desc">${p.desc}</div>
                     </div>
                 </div>
             `;
         });
     }
 
-    // cURL Section (Back in Center Pane)
-    let curlSectionHtml = '';
+    // Code Snippet Section
+    let codeSectionHtml = '';
     if (!config.autoTrigger) {
-        curlSectionHtml = `
-            <div class="curl-section" id="curlSection">
-                <div class="curl-header">
-                    <span>cURL Request</span>
-                    <button class="copy-btn" onclick="copyCurl()">COPY</button>
+        codeSectionHtml = `
+            <div class="code-section" id="codeSection">
+                <div class="code-header">
+                    <div class="custom-dropdown">
+                        <button class="dropdown-btn" onclick="toggleLangDropdown()">
+                            <span id="currentLangLabel">${getLangLabel(currentLang)}</span>
+                            <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-menu" id="langMenu">
+                            <div class="dropdown-item ${currentLang === 'curl' ? 'active' : ''}" onclick="selectLang('curl')">
+                                <span>cURL</span>
+                                ${currentLang === 'curl' ? '<span>✓</span>' : ''}
+                            </div>
+                            <div class="dropdown-item ${currentLang === 'python' ? 'active' : ''}" onclick="selectLang('python')">
+                                <span>Python</span>
+                                ${currentLang === 'python' ? '<span>✓</span>' : ''}
+                            </div>
+                            <div class="dropdown-item ${currentLang === 'js' ? 'active' : ''}" onclick="selectLang('js')">
+                                <span>JavaScript</span>
+                                ${currentLang === 'js' ? '<span>✓</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <button class="copy-icon-btn" onclick="copyCode()" title="Copy Code">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                        </svg>
+                    </button>
                 </div>
-                <div class="curl-code" id="curlDisplay">
-                    // cURL will appear here...
+                <div class="code-block" id="codeDisplay">
+                    // Code will appear here...
                 </div>
             </div>
         `;
@@ -205,10 +246,50 @@ function loadEndpoint(key) {
         <div style="margin-top: 2rem;">
             ${paramsHtml}
         </div>
-        ${curlSectionHtml}
+        ${codeSectionHtml}
     `;
 
-    updateCurl();
+    updateCodeSnippet();
+}
+
+function getLangLabel(lang) {
+    if (lang === 'curl') return 'cURL';
+    if (lang === 'python') return 'Python';
+    if (lang === 'js') return 'JavaScript';
+    return lang;
+}
+
+function toggleLangDropdown() {
+    document.getElementById("langMenu").classList.toggle("show");
+}
+
+function selectLang(lang) {
+    currentLang = lang;
+
+    // Update Label
+    document.getElementById('currentLangLabel').textContent = getLangLabel(lang);
+
+    // Update Menu Items (for checkmark)
+    const menu = document.getElementById('langMenu');
+    menu.innerHTML = `
+        <div class="dropdown-item ${currentLang === 'curl' ? 'active' : ''}" onclick="selectLang('curl')">
+            <span>cURL</span>
+            ${currentLang === 'curl' ? '<span>✓</span>' : ''}
+        </div>
+        <div class="dropdown-item ${currentLang === 'python' ? 'active' : ''}" onclick="selectLang('python')">
+            <span>Python</span>
+            ${currentLang === 'python' ? '<span>✓</span>' : ''}
+        </div>
+        <div class="dropdown-item ${currentLang === 'js' ? 'active' : ''}" onclick="selectLang('js')">
+            <span>JavaScript</span>
+            ${currentLang === 'js' ? '<span>✓</span>' : ''}
+        </div>
+    `;
+
+    // Close Dropdown
+    menu.classList.remove('show');
+
+    updateCodeSnippet();
 }
 
 function useMyLocation() {
@@ -221,7 +302,7 @@ function useMyLocation() {
     navigator.geolocation.getCurrentPosition(pos => {
         document.getElementById('input-lat').value = pos.coords.latitude.toFixed(4);
         document.getElementById('input-long').value = pos.coords.longitude.toFixed(4);
-        updateCurl();
+        updateCodeSnippet();
         btn.innerHTML = originalText;
     }, () => {
         alert('Unable to retrieve location');
@@ -231,14 +312,14 @@ function useMyLocation() {
 
 let debounceTimer;
 function handleAutoTrigger() {
-    updateCurl();
+    updateCodeSnippet();
     clearTimeout(debounceTimer);
     debounceTimer = setTimeout(executeRequest, 300);
 }
 
-function updateCurl() {
-    const curlDisplay = document.getElementById('curlDisplay');
-    if (!curlDisplay) return;
+function updateCodeSnippet() {
+    const codeDisplay = document.getElementById('codeDisplay');
+    if (!codeDisplay) return;
 
     try {
         const config = ENDPOINTS[currentEndpoint];
@@ -246,20 +327,24 @@ function updateCurl() {
         let url = `${baseUrl}${config.path}`;
         let body = null;
 
+        // Replace Path Params
         config.params.filter(p => p.type === 'path').forEach(p => {
             const el = document.getElementById(`input-${p.name}`);
             const val = el ? el.value : p.placeholder;
             url = url.replace(`{${p.name}}`, val || p.placeholder);
         });
 
+        // Build Query Params
         const queryParams = new URLSearchParams();
         config.params.filter(p => p.type === 'query').forEach(p => {
             const el = document.getElementById(`input-${p.name}`);
             const val = el && el.value ? el.value : (p.placeholder || '');
             if (val) queryParams.append(p.name, val);
         });
-        if (queryParams.toString()) url += `?${queryParams.toString()}`;
+        const queryString = queryParams.toString();
+        const fullUrl = queryString ? `${url}?${queryString}` : url;
 
+        // Build Body
         if (config.method === 'POST') {
             const bodyParam = config.params.find(p => p.type === 'body');
             if (bodyParam) {
@@ -267,30 +352,62 @@ function updateCurl() {
                 const val = el ? el.value : bodyParam.placeholder;
                 if (bodyParam.name === 'pincodes') {
                     const list = val.split(',').map(s => s.trim()).filter(s => s);
-                    body = JSON.stringify({ pincodes: list }, null, 2);
+                    body = { pincodes: list };
                 }
             }
         }
 
-        let curl = `curl --request ${config.method} \\\n  --url '${url}'`;
-        if (body) {
-            curl += ` \\\n  --header 'Content-Type: application/json' \\\n  --data '${body}'`;
+        let code = '';
+
+        if (currentLang === 'curl') {
+            code = `curl --request ${config.method} \\\n  --url '${fullUrl}'`;
+            if (body) {
+                code += ` \\\n  --header 'Content-Type: application/json' \\\n  --data '${JSON.stringify(body, null, 2)}'`;
+            }
+        } else if (currentLang === 'python') {
+            code = `import requests\n\nurl = "${fullUrl}"\n`;
+            if (body) {
+                code += `payload = ${JSON.stringify(body, null, 2)}\nheaders = {"Content-Type": "application/json"}\n\nresponse = requests.request("${config.method}", url, json=payload, headers=headers)`;
+            } else {
+                code += `\nresponse = requests.request("${config.method}", url)`;
+            }
+            code += `\n\nprint(response.text)`;
+        } else if (currentLang === 'js') {
+            code = `const options = {method: '${config.method}'`;
+            if (body) {
+                code += `, headers: {'Content-Type': 'application/json'}, body: JSON.stringify(${JSON.stringify(body)})`;
+            }
+            code += `};\n\nfetch('${fullUrl}', options)\n  .then(response => response.json())\n  .then(response => console.log(response))\n  .catch(err => console.error(err));`;
         }
 
-        // Syntax highlighting for cURL (simple)
-        curlDisplay.innerHTML = `<span style="color:var(--text-muted)">${curl}</span>`;
+        codeDisplay.innerHTML = `<span style="color:var(--text-muted)">${escapeHtml(code)}</span>`;
     } catch (e) {
         console.error(e);
-        curlDisplay.textContent = 'Error generating cURL: ' + e.message;
+        codeDisplay.textContent = 'Error generating code: ' + e.message;
     }
 }
 
-function copyCurl() {
-    const text = document.getElementById('curlDisplay').textContent;
+function escapeHtml(text) {
+    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function copyCode() {
+    const text = document.getElementById('codeDisplay').textContent;
     navigator.clipboard.writeText(text).then(() => {
-        const btn = document.querySelector('.copy-btn');
-        btn.textContent = 'COPIED!';
-        setTimeout(() => btn.textContent = 'COPY', 2000);
+        const btn = document.querySelector('.code-header .copy-icon-btn');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        setTimeout(() => btn.innerHTML = originalHtml, 2000);
+    });
+}
+
+function copyResponse() {
+    const text = document.getElementById('responseDisplay').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copyResponseBtn');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        setTimeout(() => btn.innerHTML = originalHtml, 2000);
     });
 }
 
