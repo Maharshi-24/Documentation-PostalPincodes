@@ -1,0 +1,16 @@
+{
+  "name": "documentation-postalpincodes",
+  "version": "1.0.0",
+  "description": "This project uses a custom build script to generate the static HTML files from reusable components and templates.",
+  "main": "build.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^5.2.1"
+  }
+}

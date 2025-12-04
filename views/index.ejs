@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Postal API Playground</title>
+    <%- include('partials/head') %>
+</head>
+
+<body>
+    <%- include('partials/header', { page: 'playground' }) %>
+
+        <div class="workspace" id="workspace">
+            <!-- Sidebar -->
+            <nav class="sidebar" id="sidebar">
+                <div class="sidebar-group">
+                    <div class="sidebar-title">Pincode Data</div>
+                    <div class="sidebar-item active" onclick="loadEndpoint('pincode')">
+                        <span class="method-badge get">GET</span> Get Pincode
+                    </div>
+                    <div class="sidebar-item" onclick="loadEndpoint('batch')">
+                        <span class="method-badge post">POST</span> Batch Lookup
+                    </div>
+                    <div class="sidebar-item" onclick="loadEndpoint('validate')">
+                        <span class="method-badge get">GET</span> Validate
+                    </div>
+                    <div class="sidebar-item" onclick="loadEndpoint('lookup')">
+                        <span class="method-badge get">GET</span> Address Lookup
+                    </div>
+                </div>
+
+                <div class="sidebar-group">
+                    <div class="sidebar-title">Search & Filter</div>
+                    <div class="sidebar-item" onclick="loadEndpoint('search')">
+                        <span class="method-badge get">GET</span> Search
+                    </div>
+                    <div class="sidebar-item" onclick="loadEndpoint('autocomplete')">
+                        <span class="method-badge get">GET</span> Autocomplete
+                    </div>
+                </div>
+
+                <div class="sidebar-group">
+                    <div class="sidebar-title">Location Services</div>
+                    <div class="sidebar-item" onclick="loadEndpoint('nearest')">
+                        <span class="method-badge get">GET</span> Nearest Post Office
+                    </div>
+                </div>
+
+                <div class="sidebar-group">
+                    <div class="sidebar-title">Drill-down</div>
+                    <div class="sidebar-item" onclick="loadEndpoint('states')">
+                        <span class="method-badge get">GET</span> Get States
+                    </div>
+                    <div class="sidebar-item" onclick="loadEndpoint('districts')">
+                        <span class="method-badge get">GET</span> Get Districts
+                    </div>
+                    <div class="sidebar-item" onclick="loadEndpoint('offices')">
+                        <span class="method-badge get">GET</span> Get Offices
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Center Pane -->
+            <main class="center-pane" id="centerPane">
+                <!-- Content Injected via JS -->
+            </main>
+
+            <!-- Right Pane (Response Only) -->
+            <aside class="right-pane" id="rightPane">
+                <div class="pane-header">
+                    <span>Response</span>
+                    <span id="statusCode" style="font-weight: 700;"></span>
+                </div>
+                <div class="response-content" id="responseDisplay">
+                    <span style="color: var(--text-dim);">// Waiting for request...</span>
+                </div>
+            </aside>
+        </div>
+
+        <script src="/assets/js/theme.js"></script>
+        <script src="/assets/js/playground.js"></script>
+</body>
+
+</html>

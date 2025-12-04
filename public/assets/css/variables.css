@@ -1,0 +1,80 @@
+:root {
+    /* RapidAPI Dark Theme */
+    --bg-app: #080808;
+    --bg-panel: #080808;
+    --bg-card: #111111;
+    --border: #222222;
+
+    /* RapidAPI Green */
+    --primary: #00EF8B;
+    --primary-hover: #00D67D;
+    --primary-dim: rgba(0, 239, 139, 0.1);
+
+    --text-main: #FFFFFF;
+    --text-muted: #999999;
+    --text-dim: #666666;
+
+    --input-bg: #111111;
+    --input-border: #333333;
+
+    --method-get: #00EF8B;
+    --method-post: #4A90E2;
+
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+[data-theme="light"] {
+    --bg-app: #ffffff;
+    --bg-panel: #f9fafb;
+    --bg-card: #f3f4f6;
+    --border: #e5e7eb;
+    --primary: #10b981;
+    --primary-hover: #059669;
+    --primary-dim: rgba(16, 185, 129, 0.1);
+    --text-main: #111827;
+    --text-muted: #4b5563;
+    --text-dim: #9ca3af;
+    --input-bg: #ffffff;
+    --input-border: #d1d5db;
+
+    --method-get: #059669;
+    --method-post: #2563eb;
+}
+
+/* Syntax Highlighting */
+.key {
+    color: #ff79c6;
+}
+
+.string {
+    color: #f1fa8c;
+}
+
+.number {
+    color: #bd93f9;
+}
+
+.boolean {
+    color: #8be9fd;
+}
+
+.null {
+    color: #6272a4;
+}
+
+[data-theme="light"] .key {
+    color: #d00055;
+}
+
+[data-theme="light"] .string {
+    color: #008000;
+}
+
+[data-theme="light"] .number {
+    color: #795da3;
+}
+
+[data-theme="light"] .boolean {
+    color: #005cc5;
+}
