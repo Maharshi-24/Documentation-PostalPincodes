@@ -4,16 +4,40 @@ const ENV_CONFIG = {
     vercel: 'https://postal-pincode-api.vercel.app/api/v1'
 };
 let currentEnv = localStorage.getItem('api_env') || 'local';
-let currentEndpoint = 'pincode';
+let currentEndpoint = 'intro'; // Default to intro
 let currentLang = 'curl'; // curl, python, js
 
 // --- Endpoint Definitions (Extended for Docs) ---
 const ENDPOINTS = {
+    intro: {
+        title: 'Introduction',
+        desc: 'Welcome to the Indian Postal Pincode API.',
+        type: 'static',
+        content: `
+            <div class="doc-section">
+                <h3>Purpose</h3>
+                <p>
+                    The <strong>Indian Postal Pincode API</strong> is designed to provide developers with a reliable, fast, and easy-to-use interface for accessing comprehensive data about the Indian Postal network. 
+                    With over 150,000 post offices across India, navigating this data can be complex. This API simplifies the process by offering:
+                </p>
+                <ul style="margin-left: 1.5rem; margin-top: 1rem; line-height: 1.8; color: var(--text-muted);">
+                    <li><strong>Pincode Lookups:</strong> Instantly retrieve details like district, state, and office name for any 6-digit pincode.</li>
+                    <li><strong>Location Search:</strong> Find post offices by name, district, or state with fuzzy search capabilities.</li>
+                    <li><strong>Geospatial Data:</strong> Locate the nearest post offices based on latitude and longitude coordinates.</li>
+                    <li><strong>Validation:</strong> Verify the existence and correctness of pincodes in real-time.</li>
+                </ul>
+                <p style="margin-top: 1.5rem;">
+                    Whether you are building an e-commerce platform, a logistics application, or a simple address auto-fill feature, this API provides the essential data infrastructure to enhance your user experience.
+                </p>
+            </div>
+        `
+    },
     pincode: {
         title: 'Get Pincode Details',
         desc: 'Retrieve detailed information about a specific Pincode. This includes the post office name, district, state, and other related data.',
         method: 'GET',
         path: '/pincode/{code}',
+        headers: [],
         params: [
             { name: 'code', type: 'path', dataType: 'string', desc: 'The 6-digit Pincode of the area.', placeholder: '110001', required: true, example: '110001' }
         ],
@@ -30,6 +54,9 @@ const ENDPOINTS = {
         desc: 'Retrieve details for multiple pincodes in a single request. Useful for bulk processing.',
         method: 'POST',
         path: '/pincode/batch',
+        headers: [
+            { name: 'Content-Type', value: 'application/json', desc: 'Required for sending JSON body.' }
+        ],
         params: [
             { name: 'pincodes', type: 'body', dataType: 'array', desc: 'Comma separated list of pincodes.', placeholder: '110001, 380001', required: true, example: '["110001", "380001"]' }
         ],
@@ -43,6 +70,7 @@ const ENDPOINTS = {
         desc: 'Check if a Pincode is valid and exists in the database.',
         method: 'GET',
         path: '/validate/{code}',
+        headers: [],
         params: [
             { name: 'code', type: 'path', dataType: 'string', desc: 'The 6-digit Pincode to validate.', placeholder: '560001', required: true, example: '560001' }
         ],
@@ -56,6 +84,7 @@ const ENDPOINTS = {
         desc: 'Get the State and District for a given Pincode. Useful for auto-filling address forms.',
         method: 'GET',
         path: '/pincode/{code}/lookup',
+        headers: [],
         params: [
             { name: 'code', type: 'path', dataType: 'string', desc: 'The 6-digit Pincode.', placeholder: '110001', required: true, example: '110001' }
         ],
@@ -69,6 +98,7 @@ const ENDPOINTS = {
         desc: 'Search for post offices by name, district, or state. Supports fuzzy matching for approximate results.',
         method: 'GET',
         path: '/search',
+        headers: [],
         params: [
             { name: 'q', type: 'query', dataType: 'string', desc: 'General search term (e.g., office name).', placeholder: 'Ahmedabad', example: 'Ahmedabad' },
             { name: 'district', type: 'query', dataType: 'string', desc: 'Filter results by District.', placeholder: '', example: 'Ahmedabad' },
@@ -85,6 +115,7 @@ const ENDPOINTS = {
         desc: 'Get pincode suggestions as you type. Optimized for fast lookups.',
         method: 'GET',
         path: '/autocomplete/{prefix}',
+        headers: [],
         params: [
             { name: 'prefix', type: 'path', dataType: 'string', desc: 'Starting digits (min 2).', placeholder: '380', required: true, example: '380' },
             { name: 'limit', type: 'query', dataType: 'integer', desc: 'Maximum number of results.', placeholder: '10', example: '5' }
@@ -98,6 +129,7 @@ const ENDPOINTS = {
         desc: 'Find post offices near a specific geographic location using latitude and longitude.',
         method: 'GET',
         path: '/nearest',
+        headers: [],
         params: [
             { name: 'lat', type: 'query', dataType: 'float', desc: 'Latitude of the location.', placeholder: '23.0225', required: true, example: '23.0225' },
             { name: 'long', type: 'query', dataType: 'float', desc: 'Longitude of the location.', placeholder: '72.5714', required: true, example: '72.5714' },
@@ -114,6 +146,7 @@ const ENDPOINTS = {
         desc: 'Retrieve a list of all available states in the database.',
         method: 'GET',
         path: '/states',
+        headers: [],
         params: [],
         responseParams: [
             { name: 'states', type: 'array', desc: 'List of state names.' }
@@ -124,6 +157,7 @@ const ENDPOINTS = {
         desc: 'Retrieve all districts within a specific state.',
         method: 'GET',
         path: '/districts/{state}',
+        headers: [],
         params: [
             { name: 'state', type: 'path', dataType: 'string', desc: 'Name of the state.', placeholder: 'Gujarat', required: true, example: 'Gujarat' }
         ],
@@ -136,6 +170,7 @@ const ENDPOINTS = {
         desc: 'Retrieve all post offices within a specific district.',
         method: 'GET',
         path: '/offices/{district}',
+        headers: [],
         params: [
             { name: 'district', type: 'path', dataType: 'string', desc: 'Name of the district.', placeholder: 'Ahmedabad', required: true, example: 'Ahmedabad' }
         ],
@@ -147,7 +182,7 @@ const ENDPOINTS = {
 
 // --- Init ---
 function init() {
-    loadDocs('pincode');
+    loadDocs('intro');
 
     // Close dropdown when clicking outside
     window.onclick = function (event) {
@@ -163,6 +198,12 @@ function init() {
     }
 }
 
+function setEnv(env) {
+    currentEnv = env;
+    localStorage.setItem('api_env', env);
+    renderRightPane(); // Re-render to update code snippet and button state
+}
+
 function loadDocs(key) {
     currentEndpoint = key;
     const config = ENDPOINTS[key];
@@ -174,6 +215,37 @@ function loadDocs(key) {
 
     // --- Render Center Pane (Docs) ---
     const centerPane = document.getElementById('centerPane');
+
+    if (config.type === 'static') {
+        centerPane.innerHTML = `
+            <div class="doc-header">
+                <div class="doc-title">${config.title}</div>
+                <div class="doc-desc">${config.desc}</div>
+            </div>
+            <div style="margin-top: 2rem;">
+                ${config.content}
+            </div>
+        `;
+        // Clear Right Pane for static content
+        document.getElementById('rightPane').innerHTML = '';
+        return;
+    }
+
+    // Headers Table
+    let headersHtml = '<div style="color:var(--text-muted); font-style:italic;">No specific headers required.</div>';
+    if (config.headers && config.headers.length > 0) {
+        headersHtml = config.headers.map(h => `
+            <div class="param-row">
+                <div class="param-info" style="width: 100%;">
+                    <div class="param-header">
+                        <span class="param-name">${h.name}</span>
+                        <span class="badge" style="background:var(--bg-panel); border:none;">${h.value}</span>
+                    </div>
+                    <div class="param-desc">${h.desc}</div>
+                </div>
+            </div>
+        `).join('');
+    }
 
     // Input Params Table
     let paramsHtml = '<div style="color:var(--text-muted); font-style:italic;">No parameters required.</div>';
@@ -224,6 +296,11 @@ function loadDocs(key) {
         </div>
 
         <div style="margin-top: 3rem;">
+            <div class="section-title">Headers</div>
+            ${headersHtml}
+        </div>
+
+        <div style="margin-top: 3rem;">
             <div class="section-title">Request Parameters</div>
             ${paramsHtml}
         </div>
@@ -248,6 +325,18 @@ function renderRightPane() {
     rightPane.innerHTML = `
         <div class="pane-header">
             <span>Code Snippet</span>
+            <div style="display: flex; align-items: center; gap: 1rem;">
+                <div class="env-switcher">
+                    <button class="env-btn ${currentEnv === 'local' ? 'active' : ''}" onclick="setEnv('local')">Local</button>
+                    <button class="env-btn ${currentEnv === 'vercel' ? 'active' : ''}" onclick="setEnv('vercel')">Vercel</button>
+                </div>
+                <button class="copy-icon-btn" onclick="copyCode()" title="Copy Code">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                </button>
+            </div>
         </div>
         <div class="code-section" style="margin: 0; border: none; border-radius: 0; height: 100%; display: flex; flex-direction: column;">
             <div class="code-header" style="border-top: none;">
@@ -273,12 +362,6 @@ function renderRightPane() {
                         </div>
                     </div>
                 </div>
-                <button class="copy-icon-btn" onclick="copyCode()" title="Copy Code">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                </button>
             </div>
             <div class="code-block" id="codeDisplay" style="flex: 1;">${escapeHtml(code)}</div>
         </div>
@@ -366,7 +449,7 @@ function escapeHtml(text) {
 function copyCode() {
     const text = document.getElementById('codeDisplay').textContent;
     navigator.clipboard.writeText(text).then(() => {
-        const btn = document.querySelector('.code-header .copy-icon-btn');
+        const btn = document.querySelector('.pane-header .copy-icon-btn');
         const originalHtml = btn.innerHTML;
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
         setTimeout(() => btn.innerHTML = originalHtml, 2000);

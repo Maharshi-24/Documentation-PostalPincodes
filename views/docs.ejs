@@ -13,8 +13,15 @@
             <!-- Sidebar -->
             <nav class="sidebar" id="sidebar">
                 <div class="sidebar-group">
+                    <div class="sidebar-title">Introduction</div>
+                    <div class="sidebar-item active" onclick="loadDocs('intro')">
+                        Overview
+                    </div>
+                </div>
+
+                <div class="sidebar-group">
                     <div class="sidebar-title">Pincode Data</div>
-                    <div class="sidebar-item active" onclick="loadDocs('pincode')">
+                    <div class="sidebar-item" onclick="loadDocs('pincode')">
                         <span class="method-badge get">GET</span> Get Pincode
                     </div>
                     <div class="sidebar-item" onclick="loadDocs('batch')">

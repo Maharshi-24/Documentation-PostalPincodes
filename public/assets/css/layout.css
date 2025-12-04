@@ -46,6 +46,8 @@ header {
     padding: 0 1.5rem;
     flex-shrink: 0;
     z-index: 50;
+    position: relative;
+    /* Needed for absolute centering */
 }
 
 .brand {
@@ -76,6 +78,11 @@ header {
     font-size: 0.9rem;
     font-weight: 500;
     height: 100%;
+
+    /* Absolute Centering */
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .nav-link {
