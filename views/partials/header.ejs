@@ -1,11 +1,11 @@
 <header>
     <div class="brand">
-        <div class="brand-logo">P</div>
+        <img src="/assets/favicon.png" alt="Logo" style="width: 24px; height: 24px; border-radius: 6px;">
         Postal API
     </div>
     <div class="nav-links">
-        <a href="/" class="nav-link <%= page === 'playground' ? 'active' : '' %>">Playground</a>
-        <a href="/docs" class="nav-link <%= page === 'docs' ? 'active' : '' %>">Docs</a>
+        <a href="/" class="nav-link <%= page === 'docs' ? 'active' : '' %>">Docs</a>
+        <a href="/playground" class="nav-link <%= page === 'playground' ? 'active' : '' %>">Playground</a>
     </div>
     <div class="controls">
         <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">

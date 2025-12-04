@@ -374,20 +374,25 @@ function generateCode(config, lang) {
     let body = null;
 
     // Replace Path Params with Examples
-    config.params.filter(p => p.type === 'path').forEach(p => {
-        url = url.replace(`{${p.name}}`, p.example || p.placeholder);
-    });
+    // Replace Path Params with Examples
+    if (config.params) {
+        config.params.filter(p => p.type === 'path').forEach(p => {
+            url = url.replace(`{${p.name}}`, p.example || p.placeholder);
+        });
+    }
 
     // Build Query Params with Examples
     const queryParams = new URLSearchParams();
-    config.params.filter(p => p.type === 'query').forEach(p => {
-        if (p.example) queryParams.append(p.name, p.example);
-    });
+    if (config.params) {
+        config.params.filter(p => p.type === 'query').forEach(p => {
+            if (p.example) queryParams.append(p.name, p.example);
+        });
+    }
     const queryString = queryParams.toString();
     const fullUrl = queryString ? `${url}?${queryString}` : url;
 
     // Build Body with Examples
-    if (config.method === 'POST') {
+    if (config.method === 'POST' && config.params) {
         const bodyParam = config.params.find(p => p.type === 'body');
         if (bodyParam && bodyParam.example) {
             try {

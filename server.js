@@ -12,11 +12,11 @@ app.use('/assets', express.static(path.join(__dirname, 'public/assets')));
 
 // Routes
 app.get('/', (req, res) => {
-    res.render('index');
+    res.render('docs');
 });
 
-app.get('/docs', (req, res) => {
-    res.render('docs');
+app.get('/playground', (req, res) => {
+    res.render('index');
 });
 
 // Start Server
