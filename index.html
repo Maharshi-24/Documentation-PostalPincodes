@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postal API Playground</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Midnight Dark Theme */
+            --bg-app: #050505;
+            --bg-panel: #0a0a0a;
+            --bg-card: #111111;
+            --border: #222222;
+            --primary: #00ed64;
+            --primary-dim: rgba(0, 237, 100, 0.1);
+            --text-main: #ededed;
+            --text-muted: #a1a1a1;
+            --text-dim: #666666;
+            --input-bg: #0a0a0a;
+
+            --method-get: #00ed64;
+            --method-post: #3b82f6;
+
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        [data-theme="light"] {
+            --bg-app: #ffffff;
+            --bg-panel: #f9fafb;
+            --bg-card: #f3f4f6;
+            --border: #e5e7eb;
+            --primary: #10b981;
+            --primary-dim: rgba(16, 185, 129, 0.1);
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --text-dim: #9ca3af;
+            --input-bg: #ffffff;
+
+            --method-get: #059669;
+            --method-post: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-size: 14px;
+            letter-spacing: -0.01em;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-dim);
+        }
+
+        /* Header */
+        header {
+            height: 56px;
+            background: var(--bg-app);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-main);
+        }
+
+        .brand-logo {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            height: 100%;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            padding: 0 4px;
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+        }
+
+        .nav-link.active {
+            color: var(--text-main);
+            border-bottom-color: var(--primary);
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-card);
+            color: var(--text-main);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        .env-switcher {
+            display: flex;
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 2px;
+        }
+
+        .env-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .env-btn.active {
+            background: var(--bg-card);
+            color: var(--text-main);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Workspace */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-app);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+            padding: 2rem 0;
+        }
+
+        .sidebar-group {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            padding: 0 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-item {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.15s;
+            border-left: 2px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            color: var(--text-main);
+        }
+
+        .sidebar-item.active {
+            color: var(--primary);
+            background: linear-gradient(90deg, var(--primary-dim) 0%, transparent 100%);
+            border-left-color: var(--primary);
+        }
+
+        .method-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            min-width: 38px;
+            text-align: center;
+            font-family: var(--font-mono);
+        }
+
+        .get {
+            color: var(--method-get);
+            background: rgba(0, 237, 100, 0.1);
+        }
+
+        .post {
+            color: var(--method-post);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        /* Center Pane */
+        .center-pane {
+            flex: 1;
+            background: var(--bg-app);
+            overflow-y: auto;
+            padding: 3rem 4rem;
+            min-width: 400px;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .doc-header .doc-title {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.02em;
+        }
+
+        .doc-header .doc-desc {
+            color: var(--text-muted);
+            line-height: 1.6;
+            font-size: 1rem;
+            max-width: 600px;
+        }
+
+        .endpoint-box {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .endpoint-url-wrapper {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem 1rem;
+        }
+
+        .endpoint-method {
+            color: var(--primary);
+            font-weight: 700;
+            background: var(--primary-dim);
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+        }
+
+        .endpoint-url {
+            color: var(--text-main);
+            word-break: break-all;
+        }
+
+        .try-btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-size: 0.9rem;
+            margin-right: 4px;
+        }
+
+        .try-btn:hover {
+            opacity: 0.9;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .param-row {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 2rem;
+            margin-bottom: 1.5rem;
+            align-items: start;
+        }
+
+        .param-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .param-name {
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .param-badges {
+            display: flex;
+            gap: 6px;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .badge.required {
+            color: #fca5a5;
+            border-color: rgba(252, 165, 165, 0.2);
+            background: rgba(252, 165, 165, 0.05);
+        }
+
+        .input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        input,
+        select {
+            background: var(--bg-app);
+            border: 1px solid var(--border);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            outline: none;
+            width: 100%;
+            transition: border-color 0.2s;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: var(--primary);
+        }
+
+        .param-desc {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .curl-section {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .curl-header {
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .copy-btn {
+            background: transparent;
+            border: none;
+            color: var(--primary);
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        .curl-code {
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            overflow-x: auto;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            line-height: 1.6;
+            max-height: 600px;
+            /* Fixed height with scroll */
+        }
+
+        /* Right Pane */
+        .right-pane {
+            width: 450px;
+            background: var(--bg-panel);
+            border-left: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0;
+        }
+
+        .pane-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--bg-card);
+        }
+
+        .response-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow: auto;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+
+        /* Resizer */
+        .resizer {
+            width: 1px;
+            background: var(--border);
+            cursor: col-resize;
+            flex-shrink: 0;
+            transition: width 0.2s, background 0.2s;
+            z-index: 10;
+        }
+
+        .resizer:hover,
+        .resizer.resizing {
+            width: 4px;
+            background: var(--primary);
+        }
+
+        /* Syntax Highlighting - Terminal Style */
+        .key {
+            color: #ff79c6;
+        }
+
+        /* Pink */
+        .string {
+            color: #f1fa8c;
+        }
+
+        /* Yellow */
+        .number {
+            color: #bd93f9;
+        }
+
+        /* Purple */
+        .boolean {
+            color: #8be9fd;
+        }
+
+        /* Cyan */
+        .null {
+            color: #6272a4;
+        }
+
+        /* Comment */
+
+        [data-theme="light"] .key {
+            color: #d00055;
+        }
+
+        [data-theme="light"] .string {
+            color: #008000;
+        }
+
+        [data-theme="light"] .number {
+            color: #795da3;
+        }
+
+        [data-theme="light"] .boolean {
+            color: #005cc5;
+        }
+
+        .btn-location {
+            position: absolute;
+            right: 6px;
+            top: 4px;
+            background: var(--primary);
+            border: none;
+            color: #000;
+            border-radius: 4px;
+            padding: 6px 10px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-location:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            opacity: 0.9;
+        }
+
+        .btn-location:active {
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="brand">
+            <div class="brand-logo">P</div>
+            Postal API
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link active">Playground</a>
+            <a href="docs.html" class="nav-link">API Reference</a>
+        </div>
+        <div class="controls">
+            <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                <!-- Sun Icon -->
+                <svg class="sun-icon" viewBox="0 0 24 24" style="display: none;">
+                    <path
+                        d="M12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3zm0-2V4c0-.55.45-1 1-1s1 .45 1 1v3c0 .55-.45 1-1 1s-1-.45-1-1zm0 14v3c0 .55.45 1 1 1s1-.45 1-1v-3c0-.55-.45-1-1-1s-1 .45-1 1zm8.5-7h-3c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1s-.45-1-1-1zM4.5 12h-3c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1s-.45-1-1-1zm13.45-6.05l-2.12 2.12c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l2.12-2.12c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0zm-11.9 11.9l-2.12 2.12c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l2.12-2.12c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0zm11.9 0l2.12 2.12c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-2.12-2.12c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41zM6.05 6.05l2.12 2.12c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L7.46 4.64c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41z" />
+                </svg>
+                <!-- Moon Icon -->
+                <svg class="moon-icon" viewBox="0 0 24 24">
+                    <path
+                        d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" />
+                </svg>
+            </button>
+            <div class="env-switcher">
+                <button class="env-btn active" onclick="setEnv('local')">Local</button>
+                <button class="env-btn" onclick="setEnv('vercel')">Vercel</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="workspace" id="workspace">
+
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-title">Pincode Data</div>
+                <div class="sidebar-item active" onclick="loadEndpoint('pincode')">
+                    <span class="method-badge get">GET</span> Get Pincode
+                </div>
+                <div class="sidebar-item" onclick="loadEndpoint('batch')">
+                    <span class="method-badge post">POST</span> Batch Lookup
+                </div>
+                <div class="sidebar-item" onclick="loadEndpoint('validate')">
+                    <span class="method-badge get">GET</span> Validate
+                </div>
+                <div class="sidebar-item" onclick="loadEndpoint('lookup')">
+                    <span class="method-badge get">GET</span> Address Lookup
+                </div>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-title">Search & Filter</div>
+                <div class="sidebar-item" onclick="loadEndpoint('search')">
+                    <span class="method-badge get">GET</span> Search
+                </div>
+                <div class="sidebar-item" onclick="loadEndpoint('autocomplete')">
+                    <span class="method-badge get">GET</span> Autocomplete
+                </div>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-title">Location Services</div>
+                <div class="sidebar-item" onclick="loadEndpoint('nearest')">
+                    <span class="method-badge get">GET</span> Nearest Post Office
+                </div>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-title">Drill-down</div>
+                <div class="sidebar-item" onclick="loadEndpoint('states')">
+                    <span class="method-badge get">GET</span> Get States
+                </div>
+                <div class="sidebar-item" onclick="loadEndpoint('districts')">
+                    <span class="method-badge get">GET</span> Get Districts
+                </div>
+                <div class="sidebar-item" onclick="loadEndpoint('offices')">
+                    <span class="method-badge get">GET</span> Get Offices
+                </div>
+            </div>
+        </nav>
+
+        <div class="resizer" id="resizer1"></div>
+
+        <!-- Center Pane -->
+        <main class="center-pane" id="centerPane">
+            <!-- Content Injected via JS -->
+        </main>
+
+        <div class="resizer" id="resizer2"></div>
+
+        <!-- Right Pane (Response) -->
+        <aside class="right-pane" id="rightPane">
+            <div class="pane-header">
+                <span>Response</span>
+                <span id="statusCode" style="font-weight: 700;"></span>
+            </div>
+            <div class="response-content" id="responseDisplay">
+                <span style="color: var(--text-dim);">// Waiting for request...</span>
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        // --- Config & State ---
+        const ENV_CONFIG = {
+            local: 'http://localhost:3000/api/v1',
+            vercel: 'https://postal-pincode-api.vercel.app/api/v1'
+        };
+        let currentEnv = localStorage.getItem('api_env') || 'local';
+        let currentEndpoint = 'pincode';
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        // --- Endpoint Definitions ---
+        const ENDPOINTS = {
+            pincode: {
+                title: 'Get Pincode Details',
+                desc: 'Retrieve detailed information about a specific Pincode. This includes the post office name, district, state, and other related data.',
+                method: 'GET',
+                path: '/pincode/{code}',
+                params: [
+                    { name: 'code', type: 'path', desc: 'The 6-digit Pincode of the area.', placeholder: '110001', required: true }
+                ]
+            },
+            batch: {
+                title: 'Batch Lookup',
+                desc: 'Retrieve details for multiple pincodes in a single request. Useful for bulk processing.',
+                method: 'POST',
+                path: '/pincode/batch',
+                params: [
+                    { name: 'pincodes', type: 'body', desc: 'Comma separated list of pincodes.', placeholder: '110001, 380001', required: true }
+                ]
+            },
+            validate: {
+                title: 'Validate Pincode',
+                desc: 'Check if a Pincode is valid and exists in the database.',
+                method: 'GET',
+                path: '/validate/{code}',
+                params: [
+                    { name: 'code', type: 'path', desc: 'The 6-digit Pincode to validate.', placeholder: '560001', required: true }
+                ]
+            },
+            lookup: {
+                title: 'Address Lookup',
+                desc: 'Get the State and District for a given Pincode. Useful for auto-filling address forms.',
+                method: 'GET',
+                path: '/pincode/{code}/lookup',
+                params: [
+                    { name: 'code', type: 'path', desc: 'The 6-digit Pincode.', placeholder: '110001', required: true }
+                ]
+            },
+            search: {
+                title: 'Search Locations',
+                desc: 'Search for post offices by name, district, or state. Supports fuzzy matching for approximate results.',
+                method: 'GET',
+                path: '/search',
+                params: [
+                    { name: 'q', type: 'query', desc: 'General search term (e.g., office name).', placeholder: 'Ahmedabad' },
+                    { name: 'district', type: 'query', desc: 'Filter results by District.', placeholder: '' },
+                    { name: 'office', type: 'query', desc: 'Filter results by Office Name.', placeholder: '' },
+                    { name: 'fuzzy', type: 'query', desc: 'Enable fuzzy search for approximate matches.', placeholder: 'false', isSelect: true, options: ['false', 'true'] }
+                ]
+            },
+            autocomplete: {
+                title: 'Autocomplete',
+                desc: 'Get pincode suggestions as you type. Optimized for fast lookups.',
+                method: 'GET',
+                path: '/autocomplete/{prefix}',
+                autoTrigger: true,
+                params: [
+                    { name: 'prefix', type: 'path', desc: 'Starting digits (min 2).', placeholder: '380', required: true },
+                    { name: 'limit', type: 'query', desc: 'Maximum number of results.', placeholder: '10' }
+                ]
+            },
+            nearest: {
+                title: 'Nearest Post Office',
+                desc: 'Find post offices near a specific geographic location using latitude and longitude.',
+                method: 'GET',
+                path: '/nearest',
+                params: [
+                    { name: 'lat', type: 'query', desc: 'Latitude of the location.', placeholder: '23.0225', required: true, hasAction: true },
+                    { name: 'long', type: 'query', desc: 'Longitude of the location.', placeholder: '72.5714', required: true },
+                    { name: 'radius', type: 'query', desc: 'Search radius in kilometers (max 20).', placeholder: '10' },
+                    { name: 'limit', type: 'query', desc: 'Maximum number of results.', placeholder: '10' }
+                ]
+            },
+            states: {
+                title: 'Get States',
+                desc: 'Retrieve a list of all available states in the database.',
+                method: 'GET',
+                path: '/states',
+                params: []
+            },
+            districts: {
+                title: 'Get Districts',
+                desc: 'Retrieve all districts within a specific state.',
+                method: 'GET',
+                path: '/districts/{state}',
+                params: [
+                    { name: 'state', type: 'path', desc: 'Name of the State.', placeholder: 'Gujarat', required: true }
+                ]
+            },
+            offices: {
+                title: 'Get Offices',
+                desc: 'Retrieve all post offices within a specific district.',
+                method: 'GET',
+                path: '/offices/{district}',
+                params: [
+                    { name: 'district', type: 'path', desc: 'Name of the District.', placeholder: 'Ahmedabad', required: true }
+                ]
+            }
+        };
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            applyTheme(currentTheme);
+            setEnv(currentEnv);
+            loadEndpoint('pincode');
+            initResizers();
+        });
+
+        // --- Theme Logic ---
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(currentTheme);
+        }
+
+        function applyTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+
+            const sun = document.querySelector('.sun-icon');
+            const moon = document.querySelector('.moon-icon');
+
+            if (theme === 'dark') {
+                sun.style.display = 'none';
+                moon.style.display = 'block';
+            } else {
+                sun.style.display = 'block';
+                moon.style.display = 'none';
+            }
+        }
+
+        // --- Core Logic ---
+        function setEnv(env) {
+            currentEnv = env;
+            localStorage.setItem('api_env', env);
+            document.querySelectorAll('.env-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.env-btn[onclick="setEnv('${env}')"]`).classList.add('active');
+            updateCurl();
+        }
+
+        function loadEndpoint(key) {
+            currentEndpoint = key;
+            const config = ENDPOINTS[key];
+
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            const activeItem = Array.from(document.querySelectorAll('.sidebar-item')).find(el => el.getAttribute('onclick').includes(key));
+            if (activeItem) activeItem.classList.add('active');
+
+            const centerPane = document.getElementById('centerPane');
+
+            // Build Params HTML
+            let paramsHtml = '';
+            if (config.params.length > 0) {
+                paramsHtml = `
+                    <div class="section-title">Query Parameters</div>
+                    ${config.params.map(p => renderParamInput(p, config.autoTrigger)).join('')}
+                `;
+            }
+
+            const hideCurl = key === 'autocomplete' || config.autoTrigger;
+
+            centerPane.innerHTML = `
+                <div class="doc-header">
+                    <div class="doc-title">${config.title}</div>
+                    <div class="doc-desc">${config.desc}</div>
+                </div>
+
+                <div class="endpoint-box">
+                    <div class="endpoint-url-wrapper">
+                        <span class="endpoint-method">${config.method}</span>
+                        <span class="endpoint-url">${config.path}</span>
+                    </div>
+                    ${!config.autoTrigger ? '<button class="try-btn" onclick="executeRequest()">Try it ▶</button>' : ''}
+                </div>
+
+                <div style="margin-top: 2rem;">
+                    ${paramsHtml}
+                </div>
+
+                ${!hideCurl ? `
+                <div class="curl-section">
+                    <div class="curl-header">
+                        <span>cURL</span>
+                        <button class="copy-btn" onclick="copyCurl()">COPY</button>
+                    </div>
+                    <div class="curl-code" id="curlDisplay"></div>
+                </div>` : ''}
+            `;
+
+            if (!hideCurl) updateCurl();
+            document.getElementById('responseDisplay').innerHTML = '<span style="color: var(--text-dim);">// Waiting...</span>';
+            document.getElementById('statusCode').textContent = '';
+        }
+
+        function renderParamInput(p, autoTrigger) {
+            let inputHtml = '';
+            const onInput = autoTrigger ? 'oninput="handleAutoTrigger()"' : 'oninput="updateCurl()"';
+
+            if (p.isSelect) {
+                inputHtml = `
+                    <select id="input-${p.name}" ${onInput}>
+                        ${p.options.map(opt => `<option value="${opt}">${opt}</option>`).join('')}
+                    </select>
+                `;
+            } else {
+                inputHtml = `<input type="text" id="input-${p.name}" placeholder="${p.placeholder}" ${onInput}>`;
+            }
+
+            let actionHtml = '';
+            if (p.hasAction && p.name === 'lat') {
+                actionHtml = `<button class="btn-location" onclick="useMyLocation()" title="Get My Location">📍 Locate Me</button>`;
+            }
+
+            return `
+                <div class="param-row">
+                    <div class="param-meta">
+                        <div class="param-name">${p.name}</div>
+                        <div class="param-badges">
+                            <span class="badge">${p.type === 'path' ? 'string' : 'query'}</span>
+                            ${p.required ? '<span class="badge required">required</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="input-wrapper">
+                        ${inputHtml}
+                        ${actionHtml}
+                        <div class="param-desc">${p.desc}</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function useMyLocation() {
+            if (!navigator.geolocation) return alert('Geolocation not supported');
+
+            const btn = document.querySelector('.btn-location');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '⏳ Finding...';
+
+            navigator.geolocation.getCurrentPosition(pos => {
+                document.getElementById('input-lat').value = pos.coords.latitude.toFixed(4);
+                document.getElementById('input-long').value = pos.coords.longitude.toFixed(4);
+                updateCurl();
+                btn.innerHTML = originalText;
+            }, () => {
+                alert('Unable to retrieve location');
+                btn.innerHTML = originalText;
+            });
+        }
+
+        let debounceTimer;
+        function handleAutoTrigger() {
+            updateCurl();
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(executeRequest, 300);
+        }
+
+        function updateCurl() {
+            const curlDisplay = document.getElementById('curlDisplay');
+            if (!curlDisplay) return;
+
+            try {
+                const config = ENDPOINTS[currentEndpoint];
+                const baseUrl = ENV_CONFIG[currentEnv];
+                let url = `${baseUrl}${config.path}`;
+                let body = null;
+
+                config.params.filter(p => p.type === 'path').forEach(p => {
+                    const el = document.getElementById(`input-${p.name}`);
+                    const val = el ? el.value : p.placeholder;
+                    url = url.replace(`{${p.name}}`, val || p.placeholder);
+                });
+
+                const queryParams = new URLSearchParams();
+                config.params.filter(p => p.type === 'query').forEach(p => {
+                    const el = document.getElementById(`input-${p.name}`);
+                    const val = el && el.value ? el.value : (p.placeholder || '');
+                    if (val) queryParams.append(p.name, val);
+                });
+                if (queryParams.toString()) url += `?${queryParams.toString()}`;
+
+                if (config.method === 'POST') {
+                    const bodyParam = config.params.find(p => p.type === 'body');
+                    if (bodyParam) {
+                        const el = document.getElementById(`input-${bodyParam.name}`);
+                        const val = el ? el.value : bodyParam.placeholder;
+                        if (bodyParam.name === 'pincodes') {
+                            const list = val.split(',').map(s => s.trim()).filter(s => s);
+                            body = JSON.stringify({ pincodes: list }, null, 2);
+                        }
+                    }
+                }
+
+                let curl = `curl --request ${config.method} \\\n  --url '${url}'`;
+                if (body) {
+                    curl += ` \\\n  --header 'Content-Type: application/json' \\\n  --data '${body}'`;
+                }
+
+                curlDisplay.textContent = curl;
+            } catch (e) {
+                console.error(e);
+                curlDisplay.textContent = 'Error generating cURL: ' + e.message;
+            }
+        }
+
+        function copyCurl() {
+            const text = document.getElementById('curlDisplay').textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                btn.textContent = 'COPIED!';
+                setTimeout(() => btn.textContent = 'COPY', 2000);
+            });
+        }
+
+        async function executeRequest() {
+            const config = ENDPOINTS[currentEndpoint];
+            const baseUrl = ENV_CONFIG[currentEnv];
+            let url = `${baseUrl}${config.path}`;
+            let body = null;
+
+            config.params.filter(p => p.type === 'path').forEach(p => {
+                const el = document.getElementById(`input-${p.name}`);
+                const val = el ? el.value : '';
+                if (config.autoTrigger && !val) return;
+                url = url.replace(`{${p.name}}`, val || p.placeholder);
+            });
+
+            if (config.autoTrigger && url.includes('{')) return;
+
+            const queryParams = new URLSearchParams();
+            config.params.filter(p => p.type === 'query').forEach(p => {
+                const el = document.getElementById(`input-${p.name}`);
+                const val = el && el.value ? el.value : (p.placeholder || '');
+                if (val) queryParams.append(p.name, val);
+            });
+            if (queryParams.toString()) url += `?${queryParams.toString()}`;
+
+            if (config.method === 'POST') {
+                const bodyParam = config.params.find(p => p.type === 'body');
+                if (bodyParam) {
+                    const el = document.getElementById(`input-${bodyParam.name}`);
+                    const val = el ? el.value : bodyParam.placeholder;
+                    if (bodyParam.name === 'pincodes') {
+                        const list = val.split(',').map(s => s.trim()).filter(s => s);
+                        body = JSON.stringify({ pincodes: list });
+                    }
+                }
+            }
+
+            const responseDisplay = document.getElementById('responseDisplay');
+            const statusDisplay = document.getElementById('statusCode');
+
+            responseDisplay.innerHTML = '<span style="color: var(--text-dim)">Loading...</span>';
+
+            try {
+                const options = { method: config.method, headers: { 'Content-Type': 'application/json' } };
+                if (body) options.body = body;
+
+                const start = performance.now();
+                const res = await fetch(url, options);
+                const data = await res.json();
+                const time = (performance.now() - start).toFixed(0);
+
+                statusDisplay.textContent = `${res.status} ${res.statusText} (${time}ms)`;
+                statusDisplay.style.color = res.ok ? 'var(--primary)' : '#ef4444';
+
+                responseDisplay.innerHTML = syntaxHighlight(data);
+            } catch (err) {
+                statusDisplay.textContent = 'ERROR';
+                statusDisplay.style.color = '#ef4444';
+                responseDisplay.textContent = err.message;
+            }
+        }
+
+        function syntaxHighlight(json) {
+            if (typeof json != 'string') json = JSON.stringify(json, undefined, 2);
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                var cls = 'number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) cls = 'key';
+                    else cls = 'string';
+                } else if (/true|false/.test(match)) cls = 'boolean';
+                else if (/null/.test(match)) cls = 'null';
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
+        function initResizers() {
+            setupResizer('resizer1', 'sidebar', true);
+            setupResizer('resizer2', 'rightPane', false);
+        }
+
+        function setupResizer(id, targetId, isLeft) {
+            const resizer = document.getElementById(id);
+            const target = document.getElementById(targetId);
+            const workspace = document.getElementById('workspace');
+            let isResizing = false;
+
+            resizer.addEventListener('mousedown', (e) => {
+                isResizing = true;
+                resizer.classList.add('resizing');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (!isResizing) return;
+                const rect = workspace.getBoundingClientRect();
+                let newVal;
+
+                if (isLeft) {
+                    newVal = e.clientX - rect.left;
+                } else {
+                    newVal = rect.right - e.clientX;
+                }
+
+                if (newVal > 150 && newVal < 600) {
+                    target.style.width = `${newVal}px`;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isResizing = false;
+                resizer.classList.remove('resizing');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+            });
+        }
+    </script>
+</body>
+
+</html>

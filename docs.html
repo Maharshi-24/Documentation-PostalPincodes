@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Postal API Documentation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            /* Midnight Dark Theme */
+            --bg-app: #050505;
+            --bg-panel: #0a0a0a;
+            --bg-card: #111111;
+            --border: #222222;
+            --primary: #00ed64;
+            --primary-dim: rgba(0, 237, 100, 0.1);
+            --text-main: #ededed;
+            --text-muted: #a1a1a1;
+            --text-dim: #666666;
+
+            --method-get: #00ed64;
+            --method-post: #3b82f6;
+
+            --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        [data-theme="light"] {
+            --bg-app: #ffffff;
+            --bg-panel: #f9fafb;
+            --bg-card: #f3f4f6;
+            --border: #e5e7eb;
+            --primary: #10b981;
+            --primary-dim: rgba(16, 185, 129, 0.1);
+            --text-main: #111827;
+            --text-muted: #4b5563;
+            --text-dim: #9ca3af;
+
+            --method-get: #059669;
+            --method-post: #2563eb;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-app);
+            color: var(--text-main);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            font-size: 14px;
+            letter-spacing: -0.01em;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-dim);
+        }
+
+        /* Header */
+        header {
+            height: 56px;
+            background: var(--bg-app);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            flex-shrink: 0;
+            z-index: 50;
+        }
+
+        .brand {
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-main);
+        }
+
+        .brand-logo {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: 800;
+            font-size: 12px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            height: 100%;
+        }
+
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            height: 100%;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+            padding: 0 4px;
+        }
+
+        .nav-link:hover {
+            color: var(--text-main);
+        }
+
+        .nav-link.active {
+            color: var(--text-main);
+            border-bottom-color: var(--primary);
+        }
+
+        .theme-toggle {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-card);
+            color: var(--text-main);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Workspace */
+        .workspace {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-app);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+            padding: 2rem 0;
+        }
+
+        .sidebar-group {
+            margin-bottom: 2rem;
+        }
+
+        .sidebar-title {
+            padding: 0 1.5rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-item {
+            padding: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.15s;
+            border-left: 2px solid transparent;
+            text-decoration: none;
+        }
+
+        .sidebar-item:hover {
+            color: var(--text-main);
+        }
+
+        .sidebar-item.active {
+            color: var(--primary);
+            background: linear-gradient(90deg, var(--primary-dim) 0%, transparent 100%);
+            border-left-color: var(--primary);
+        }
+
+        /* Center Pane */
+        .center-pane {
+            flex: 1;
+            background: var(--bg-app);
+            overflow-y: auto;
+            padding: 3rem 4rem;
+            min-width: 400px;
+        }
+
+        .doc-section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 4rem;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            letter-spacing: -0.03em;
+            color: var(--text-main);
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.75rem;
+            color: var(--text-main);
+        }
+
+        h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.7;
+            max-width: 800px;
+        }
+
+        .endpoint-card {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .endpoint-meta {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+        }
+
+        .method-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+        }
+
+        .get {
+            background: var(--primary-dim);
+            color: var(--primary);
+        }
+
+        .post {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+        }
+
+        .path {
+            color: var(--text-muted);
+        }
+
+        code {
+            font-family: var(--font-mono);
+            background: var(--bg-card);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+            border: 1px solid var(--border);
+        }
+
+        pre {
+            background: var(--bg-card);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+            border: none;
+            color: var(--text-muted);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            text-align: left;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            color: var(--text-dim);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            color: var(--text-muted);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        .badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="brand">
+            <div class="brand-logo">P</div>
+            Postal API
+        </div>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link">Playground</a>
+            <a href="#" class="nav-link active">API Reference</a>
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+            <!-- Sun Icon -->
+            <svg class="sun-icon" viewBox="0 0 24 24" style="display: none;">
+                <path
+                    d="M12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.65 0-3 1.35-3 3s1.35 3 3 3 3-1.35 3-3-1.35-3-3-3zm0-2V4c0-.55.45-1 1-1s1 .45 1 1v3c0 .55-.45 1-1 1s-1-.45-1-1zm0 14v3c0 .55.45 1 1 1s1-.45 1-1v-3c0-.55-.45-1-1-1s-1 .45-1 1zm8.5-7h-3c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1s-.45-1-1-1zM4.5 12h-3c-.55 0-1 .45-1 1s.45 1 1 1h3c.55 0 1-.45 1-1s-.45-1-1-1zm13.45-6.05l-2.12 2.12c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l2.12-2.12c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0zm-11.9 11.9l-2.12 2.12c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l2.12-2.12c.39-.39.39-1.02 0-1.41-.39-.39-1.02-.39-1.41 0zm11.9 0l2.12 2.12c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41l-2.12-2.12c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41zM6.05 6.05l2.12 2.12c.39.39 1.02.39 1.41 0 .39-.39.39-1.02 0-1.41L7.46 4.64c-.39-.39-1.02-.39-1.41 0-.39.39-.39 1.02 0 1.41z" />
+            </svg>
+            <!-- Moon Icon -->
+            <svg class="moon-icon" viewBox="0 0 24 24">
+                <path
+                    d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z" />
+            </svg>
+        </button>
+    </header>
+
+    <div class="workspace">
+
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <div class="sidebar-group">
+                <div class="sidebar-title">Introduction</div>
+                <a href="#intro" class="sidebar-item active">Overview</a>
+                <a href="#base-url" class="sidebar-item">Base URL</a>
+            </div>
+
+            <div class="sidebar-group">
+                <div class="sidebar-title">Endpoints</div>
+                <a href="#pincode" class="sidebar-item">Get Pincode</a>
+                <a href="#search" class="sidebar-item">Search</a>
+                <a href="#nearest" class="sidebar-item">Nearest Office</a>
+                <a href="#batch" class="sidebar-item">Batch Lookup</a>
+            </div>
+        </nav>
+
+        <!-- Center Pane -->
+        <main class="center-pane">
+
+            <section id="intro" class="doc-section">
+                <h1>API Documentation</h1>
+                <p>Welcome to the Indian Postal Pincode API documentation. This API provides comprehensive data about
+                    Indian Post Offices, including pincode lookups, location-based searches, and hierarchical
+                    drill-downs.</p>
+            </section>
+
+            <section id="base-url" class="doc-section">
+                <h2>Base URL</h2>
+                <p>All API requests should be made to:</p>
+                <pre><code>https://postal-pincode-api.vercel.app/api/v1</code></pre>
+            </section>
+
+            <section id="pincode" class="doc-section">
+                <h2>Get Pincode Details</h2>
+                <div class="endpoint-card">
+                    <div class="endpoint-meta">
+                        <span class="method-badge get">GET</span>
+                        <span class="path">/pincode/{code}</span>
+                    </div>
+                    <p>Retrieve detailed information about a specific pincode, including all post offices under it.</p>
+                </div>
+            </section>
+
+            <section id="search" class="doc-section">
+                <h2>Search Locations</h2>
+                <div class="endpoint-card">
+                    <div class="endpoint-meta">
+                        <span class="method-badge get">GET</span>
+                        <span class="path">/search</span>
+                    </div>
+                    <p>Search for post offices by name, district, or state. Supports fuzzy matching.</p>
+                    <h3>Query Parameters</h3>
+                    <table>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><code style="color: var(--primary)">q</code></td>
+                            <td><span class="badge">query</span></td>
+                            <td>General search term (e.g., "Ahmedabad")</td>
+                        </tr>
+                        <tr>
+                            <td><code style="color: var(--primary)">fuzzy</code></td>
+                            <td><span class="badge">query</span></td>
+                            <td>Set to "true" for approximate matching</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <section id="nearest" class="doc-section">
+                <h2>Nearest Post Office</h2>
+                <div class="endpoint-card">
+                    <div class="endpoint-meta">
+                        <span class="method-badge get">GET</span>
+                        <span class="path">/nearest</span>
+                    </div>
+                    <p>Find post offices near a specific latitude and longitude.</p>
+                    <h3>Query Parameters</h3>
+                    <table>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Type</th>
+                            <th>Description</th>
+                        </tr>
+                        <tr>
+                            <td><code style="color: var(--primary)">lat</code></td>
+                            <td><span class="badge">query</span></td>
+                            <td>Latitude (e.g., 23.0225)</td>
+                        </tr>
+                        <tr>
+                            <td><code style="color: var(--primary)">long</code></td>
+                            <td><span class="badge">query</span></td>
+                            <td>Longitude (e.g., 72.5714)</td>
+                        </tr>
+                        <tr>
+                            <td><code style="color: var(--primary)">radius</code></td>
+                            <td><span class="badge">query</span></td>
+                            <td>Search radius in km (max 20)</td>
+                        </tr>
+                    </table>
+                </div>
+            </section>
+
+            <section id="batch" class="doc-section">
+                <h2>Batch Lookup</h2>
+                <div class="endpoint-card">
+                    <div class="endpoint-meta">
+                        <span class="method-badge post">POST</span>
+                        <span class="path">/pincode/batch</span>
+                    </div>
+                    <p>Retrieve details for multiple pincodes in a single request.</p>
+                    <h3>Request Body</h3>
+                    <pre><code>{
+  "pincodes": ["110001", "380001"]
+}</code></pre>
+                </div>
+            </section>
+
+        </main>
+
+    </div>
+
+    <script>
+        function toggleTheme() {
+            const body = document.body;
+            const current = body.getAttribute('data-theme');
+            const next = current === 'light' ? 'dark' : 'light';
+            applyTheme(next);
+        }
+
+        function applyTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('theme', theme);
+
+            const sun = document.querySelector('.sun-icon');
+            const moon = document.querySelector('.moon-icon');
+
+            if (theme === 'dark') {
+                sun.style.display = 'none';
+                moon.style.display = 'block';
+            } else {
+                sun.style.display = 'block';
+                moon.style.display = 'none';
+            }
+        }
+
+        // Init Theme
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        applyTheme(savedTheme);
+
+        // Active Link Logic
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+                    const id = entry.target.getAttribute('id');
+                    const link = document.querySelector(`.sidebar-item[href="#${id}"]`);
+                    if (link) link.classList.add('active');
+                }
+            });
+        }, { threshold: 0.5 });
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+
+</html>
