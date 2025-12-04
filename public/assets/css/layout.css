@@ -198,14 +198,18 @@ header {
 
 .response-content {
     flex: 1;
-    padding: 1.5rem;
     overflow: auto;
     font-family: var(--font-mono);
-    font-size: 0.85rem;
+    font-size: 0.80rem;
     line-height: 1.6;
     background: var(--bg-panel);
     color: var(--text-muted);
     white-space: pre-wrap;
+
+    /* Ensure Top-Left Alignment */
+    display: block;
+    text-align: left;
+    align-content: start;
 }
 
 /* cURL Section (Now in Center Pane) */

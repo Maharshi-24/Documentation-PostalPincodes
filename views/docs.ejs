@@ -9,150 +9,69 @@
 <body>
     <%- include('partials/header', { page: 'docs' }) %>
 
-        <div class="workspace">
+        <div class="workspace" id="workspace">
             <!-- Sidebar -->
-            <nav class="sidebar">
+            <nav class="sidebar" id="sidebar">
                 <div class="sidebar-group">
-                    <div class="sidebar-title">Introduction</div>
-                    <a href="#intro" class="sidebar-item active">Overview</a>
-                    <a href="#base-url" class="sidebar-item">Base URL</a>
+                    <div class="sidebar-title">Pincode Data</div>
+                    <div class="sidebar-item active" onclick="loadDocs('pincode')">
+                        <span class="method-badge get">GET</span> Get Pincode
+                    </div>
+                    <div class="sidebar-item" onclick="loadDocs('batch')">
+                        <span class="method-badge post">POST</span> Batch Lookup
+                    </div>
+                    <div class="sidebar-item" onclick="loadDocs('validate')">
+                        <span class="method-badge get">GET</span> Validate
+                    </div>
+                    <div class="sidebar-item" onclick="loadDocs('lookup')">
+                        <span class="method-badge get">GET</span> Address Lookup
+                    </div>
                 </div>
 
                 <div class="sidebar-group">
-                    <div class="sidebar-title">Endpoints</div>
-                    <a href="#pincode" class="sidebar-item">Get Pincode</a>
-                    <a href="#search" class="sidebar-item">Search</a>
-                    <a href="#nearest" class="sidebar-item">Nearest Office</a>
-                    <a href="#batch" class="sidebar-item">Batch Lookup</a>
+                    <div class="sidebar-title">Search & Filter</div>
+                    <div class="sidebar-item" onclick="loadDocs('search')">
+                        <span class="method-badge get">GET</span> Search
+                    </div>
+                    <div class="sidebar-item" onclick="loadDocs('autocomplete')">
+                        <span class="method-badge get">GET</span> Autocomplete
+                    </div>
+                </div>
+
+                <div class="sidebar-group">
+                    <div class="sidebar-title">Location Services</div>
+                    <div class="sidebar-item" onclick="loadDocs('nearest')">
+                        <span class="method-badge get">GET</span> Nearest Post Office
+                    </div>
+                </div>
+
+                <div class="sidebar-group">
+                    <div class="sidebar-title">Drill-down</div>
+                    <div class="sidebar-item" onclick="loadDocs('states')">
+                        <span class="method-badge get">GET</span> Get States
+                    </div>
+                    <div class="sidebar-item" onclick="loadDocs('districts')">
+                        <span class="method-badge get">GET</span> Get Districts
+                    </div>
+                    <div class="sidebar-item" onclick="loadDocs('offices')">
+                        <span class="method-badge get">GET</span> Get Offices
+                    </div>
                 </div>
             </nav>
 
-            <!-- Center Pane -->
-            <main class="center-pane">
-                <section id="intro" class="doc-section">
-                    <h1>API Documentation</h1>
-                    <p>Welcome to the Indian Postal Pincode API documentation. This API provides comprehensive data
-                        about
-                        Indian Post Offices, including pincode lookups, location-based searches, and hierarchical
-                        drill-downs.</p>
-                </section>
-
-                <section id="base-url" class="doc-section">
-                    <h2>Base URL</h2>
-                    <p>All API requests should be made to:</p>
-                    <pre><code>https://postal-pincode-api.vercel.app/api/v1</code></pre>
-                </section>
-
-                <section id="pincode" class="doc-section">
-                    <h2>Get Pincode Details</h2>
-                    <div class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method-badge get">GET</span>
-                            <span class="path">/pincode/{code}</span>
-                        </div>
-                        <p>Retrieve detailed information about a specific pincode, including all post offices under it.
-                        </p>
-                    </div>
-                </section>
-
-                <section id="search" class="doc-section">
-                    <h2>Search Locations</h2>
-                    <div class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method-badge get">GET</span>
-                            <span class="path">/search</span>
-                        </div>
-                        <p>Search for post offices by name, district, or state. Supports fuzzy matching.</p>
-                        <h3>Query Parameters</h3>
-                        <table>
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Type</th>
-                                <th>Description</th>
-                            </tr>
-                            <tr>
-                                <td><code style="color: var(--primary)">q</code></td>
-                                <td><span class="badge">query</span></td>
-                                <td>General search term (e.g., "Ahmedabad")</td>
-                            </tr>
-                            <tr>
-                                <td><code style="color: var(--primary)">fuzzy</code></td>
-                                <td><span class="badge">query</span></td>
-                                <td>Set to "true" for approximate matching</td>
-                            </tr>
-                        </table>
-                    </div>
-                </section>
-
-                <section id="nearest" class="doc-section">
-                    <h2>Nearest Post Office</h2>
-                    <div class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method-badge get">GET</span>
-                            <span class="path">/nearest</span>
-                        </div>
-                        <p>Find post offices near a specific latitude and longitude.</p>
-                        <h3>Query Parameters</h3>
-                        <table>
-                            <tr>
-                                <th>Parameter</th>
-                                <th>Type</th>
-                                <th>Description</th>
-                            </tr>
-                            <tr>
-                                <td><code style="color: var(--primary)">lat</code></td>
-                                <td><span class="badge">query</span></td>
-                                <td>Latitude (e.g., 23.0225)</td>
-                            </tr>
-                            <tr>
-                                <td><code style="color: var(--primary)">long</code></td>
-                                <td><span class="badge">query</span></td>
-                                <td>Longitude (e.g., 72.5714)</td>
-                            </tr>
-                            <tr>
-                                <td><code style="color: var(--primary)">radius</code></td>
-                                <td><span class="badge">query</span></td>
-                                <td>Search radius in km (max 20)</td>
-                            </tr>
-                        </table>
-                    </div>
-                </section>
-
-                <section id="batch" class="doc-section">
-                    <h2>Batch Lookup</h2>
-                    <div class="endpoint-card">
-                        <div class="endpoint-meta">
-                            <span class="method-badge post">POST</span>
-                            <span class="path">/pincode/batch</span>
-                        </div>
-                        <p>Retrieve details for multiple pincodes in a single request.</p>
-                        <h3>Request Body</h3>
-                        <pre><code>{
-  "pincodes": ["110001", "380001"]
-}</code></pre>
-                    </div>
-                </section>
+            <!-- Center Pane (Documentation) -->
+            <main class="center-pane" id="centerPane">
+                <!-- Content Injected via JS -->
             </main>
+
+            <!-- Right Pane (Code Snippets) -->
+            <aside class="right-pane" id="rightPane">
+                <!-- Content Injected via JS -->
+            </aside>
         </div>
 
         <script src="/assets/js/theme.js"></script>
-        <script>
-            // Active Link Logic
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-                        const id = entry.target.getAttribute('id');
-                        const link = document.querySelector(`.sidebar-item[href="#${id}"]`);
-                        if (link) link.classList.add('active');
-                    }
-                });
-            }, { threshold: 0.5 });
-
-            document.querySelectorAll('section').forEach(section => {
-                observer.observe(section);
-            });
-        </script>
+        <script src="/assets/js/docs.js"></script>
 </body>
 
 </html>
