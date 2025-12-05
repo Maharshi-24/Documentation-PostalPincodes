@@ -1,129 +1,7 @@
-// --- Config & State ---
-const ENV_CONFIG = {
-    local: 'http://localhost:3000/api/v1',
-    vercel: 'https://postal-pincode-api.vercel.app/api/v1'
-};
-let currentEnv = localStorage.getItem('api_env') || 'local';
-let currentEndpoint = 'pincode';
-let currentLang = 'curl'; // curl, python, js
-
-// --- Endpoint Definitions ---
-const ENDPOINTS = {
-    pincode: {
-        title: 'Get Pincode Details',
-        desc: 'Retrieve detailed information about a specific Pincode. This includes the post office name, district, state, and other related data.',
-        method: 'GET',
-        path: '/pincode/{code}',
-        params: [
-            { name: 'code', type: 'path', dataType: 'string', desc: 'The 6-digit Pincode of the area.', placeholder: '110001', required: true, example: '110001' }
-        ]
-    },
-    batch: {
-        title: 'Batch Lookup',
-        desc: 'Retrieve details for multiple pincodes in a single request. Useful for bulk processing.',
-        method: 'POST',
-        path: '/pincode/batch',
-        params: [
-            { name: 'pincodes', type: 'body', dataType: 'array', desc: 'Comma separated list of pincodes.', placeholder: '110001, 380001', required: true, example: '["110001", "380001"]' }
-        ]
-    },
-    validate: {
-        title: 'Validate Pincode',
-        desc: 'Check if a Pincode is valid and exists in the database.',
-        method: 'GET',
-        path: '/validate/{code}',
-        params: [
-            { name: 'code', type: 'path', dataType: 'string', desc: 'The 6-digit Pincode to validate.', placeholder: '560001', required: true, example: '560001' }
-        ]
-    },
-    lookup: {
-        title: 'Address Lookup',
-        desc: 'Get the State and District for a given Pincode. Useful for auto-filling address forms.',
-        method: 'GET',
-        path: '/pincode/{code}/lookup',
-        params: [
-            { name: 'code', type: 'path', dataType: 'string', desc: 'The 6-digit Pincode.', placeholder: '110001', required: true, example: '110001' }
-        ]
-    },
-    search: {
-        title: 'Search Locations',
-        desc: 'Search for post offices by name, district, or state. Supports fuzzy matching for approximate results.',
-        method: 'GET',
-        path: '/search',
-        params: [
-            { name: 'q', type: 'query', dataType: 'string', desc: 'General search term (e.g., office name).', placeholder: 'Ahmedabad', example: 'Ahmedabad' },
-            { name: 'district', type: 'query', dataType: 'string', desc: 'Filter results by District.', placeholder: '', example: 'Ahmedabad' },
-            { name: 'office', type: 'query', dataType: 'string', desc: 'Filter results by Office Name.', placeholder: '', example: 'GPO' },
-            { name: 'fuzzy', type: 'query', dataType: 'boolean', desc: 'Enable fuzzy search for approximate matches.', placeholder: 'false', isSelect: true, options: ['false', 'true'], example: 'true' }
-        ]
-    },
-    autocomplete: {
-        title: 'Autocomplete',
-        desc: 'Get pincode suggestions as you type. Optimized for fast lookups.',
-        method: 'GET',
-        path: '/autocomplete/{prefix}',
-        autoTrigger: true,
-        params: [
-            { name: 'prefix', type: 'path', dataType: 'string', desc: 'Starting digits (min 2).', placeholder: '380', required: true, example: '380' },
-            { name: 'limit', type: 'query', dataType: 'integer', desc: 'Maximum number of results.', placeholder: '10', example: '5' }
-        ]
-    },
-    nearest: {
-        title: 'Nearest Post Office',
-        desc: 'Find post offices near a specific geographic location using latitude and longitude.',
-        method: 'GET',
-        path: '/nearest',
-        params: [
-            { name: 'lat', type: 'query', dataType: 'float', desc: 'Latitude of the location.', placeholder: '23.0225', required: true, hasAction: true, example: '23.0225' },
-            { name: 'long', type: 'query', dataType: 'float', desc: 'Longitude of the location.', placeholder: '72.5714', required: true, example: '72.5714' },
-            { name: 'radius', type: 'query', dataType: 'integer', desc: 'Search radius in kilometers (max 20).', placeholder: '10', example: '10' },
-            { name: 'limit', type: 'query', dataType: 'integer', desc: 'Maximum number of results.', placeholder: '10', example: '5' }
-        ]
-    },
-    states: {
-        title: 'Get States',
-        desc: 'Retrieve a list of all available states in the database.',
-        method: 'GET',
-        path: '/states',
-        params: []
-    },
-    districts: {
-        title: 'Get Districts',
-        desc: 'Retrieve all districts within a specific state.',
-        method: 'GET',
-        path: '/districts/{state}',
-        params: [
-            { name: 'state', type: 'path', dataType: 'string', desc: 'Name of the state.', placeholder: 'Gujarat', required: true, example: 'Gujarat' }
-        ]
-    },
-    offices: {
-        title: 'Get Offices',
-        desc: 'Retrieve all post offices within a specific district.',
-        method: 'GET',
-        path: '/offices/{district}',
-        params: [
-            { name: 'district', type: 'path', dataType: 'string', desc: 'Name of the district.', placeholder: 'Ahmedabad', required: true, example: 'Ahmedabad' }
-        ]
-    }
-};
-
 // --- Init ---
 function init() {
     updateEnvUI();
     loadEndpoint('pincode');
-
-    // Close dropdown when clicking outside
-    window.onclick = function (event) {
-        if (!event.target.matches('.dropdown-btn') && !event.target.closest('.dropdown-btn')) {
-            const dropdowns = document.getElementsByClassName("dropdown-menu");
-            for (let i = 0; i < dropdowns.length; i++) {
-                const openDropdown = dropdowns[i];
-                if (openDropdown.classList.contains('show')) {
-                    openDropdown.classList.remove('show');
-                }
-            }
-        }
-    }
 }
 
 function setEnv(env) {
@@ -131,12 +9,6 @@ function setEnv(env) {
     localStorage.setItem('api_env', env);
     updateEnvUI();
     updateCodeSnippet();
-}
-
-function updateEnvUI() {
-    document.querySelectorAll('.env-btn').forEach(btn => {
-        btn.classList.toggle('active', btn.textContent.toLowerCase() === currentEnv);
-    });
 }
 
 function loadEndpoint(key) {
@@ -250,17 +122,6 @@ function loadEndpoint(key) {
     `;
 
     updateCodeSnippet();
-}
-
-function getLangLabel(lang) {
-    if (lang === 'curl') return 'cURL';
-    if (lang === 'python') return 'Python';
-    if (lang === 'js') return 'JavaScript';
-    return lang;
-}
-
-function toggleLangDropdown() {
-    document.getElementById("langMenu").classList.toggle("show");
 }
 
 function selectLang(lang) {
@@ -385,20 +246,6 @@ function updateCodeSnippet() {
         console.error(e);
         codeDisplay.textContent = 'Error generating code: ' + e.message;
     }
-}
-
-function escapeHtml(text) {
-    return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-}
-
-function copyCode() {
-    const text = document.getElementById('codeDisplay').textContent;
-    navigator.clipboard.writeText(text).then(() => {
-        const btn = document.querySelector('.code-header .copy-icon-btn');
-        const originalHtml = btn.innerHTML;
-        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-        setTimeout(() => btn.innerHTML = originalHtml, 2000);
-    });
 }
 
 function copyResponse() {
